@@ -35,4 +35,22 @@ return [
         ],
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('APP_URL', 'http://127.0.0.1:8000') . '/auth/social/google/callback',
+    ],
+
+    'facebook' => [
+        'client_id' => env('FACEBOOK_APP_ID', env('FACEBOOK_CLIENT_ID')),
+        'client_secret' => env('FACEBOOK_APP_SECRET', env('FACEBOOK_CLIENT_SECRET')),
+        'redirect' => env('APP_URL', 'http://127.0.0.1:8000') . '/auth/social/facebook/callback',
+    ],
+
+    'zalo' => [
+        'client_id' => env('ZALO_APP_ID', env('ZALO_CLIENT_ID')),
+        'client_secret' => env('ZALO_SECRET_KEY', env('ZALO_CLIENT_SECRET')),
+        'redirect' => env('APP_URL', 'http://127.0.0.1:8000') . '/auth/social/zalo/callback',
+    ],
+
 ];

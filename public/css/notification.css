@@ -1,0 +1,441 @@
+/**
+ * ============================================================================
+ * COMPLEXUS NOTIFICATION SYSTEM (TOASTS & CONFIRM MODAL)
+ * Modern, Glassmorphism, Theme-Aware (Dark & Light Mode)
+ * ============================================================================
+ */
+
+:root {
+  --notify-primary: var(--primary, var(--brand, #2563eb));
+  --notify-primary-hover: var(--primary-hover, var(--brand-hover, #1d4ed8));
+  --notify-surface: var(--surface, #ffffff);
+  --notify-surface-alt: var(--surface-alt, #f8fafc);
+  --notify-text: var(--on-surface, #0f172a);
+  --notify-text-muted: var(--on-surface-variant, #64748b);
+  --notify-border: var(--border, #e2e8f0);
+  --notify-success: #10b981;
+  --notify-success-bg: rgba(16, 185, 129, 0.12);
+  --notify-error: #ef4444;
+  --notify-error-bg: rgba(239, 68, 68, 0.12);
+  --notify-warn: #f59e0b;
+  --notify-warn-bg: rgba(245, 158, 11, 0.12);
+  --notify-info: #0284c7;
+  --notify-info-bg: rgba(2, 132, 199, 0.12);
+}
+
+[data-theme="dark"], body.dark-mode, .dark-mode {
+  --notify-primary: #3b82f6;
+  --notify-primary-hover: #60a5fa;
+  --notify-surface: #1e293b;
+  --notify-surface-alt: #0f172a;
+  --notify-text: #f8fafc;
+  --notify-text-muted: #94a3b8;
+  --notify-border: #334155;
+  --notify-success: #34d399;
+  --notify-success-bg: rgba(52, 211, 153, 0.18);
+  --notify-error: #f87171;
+  --notify-error-bg: rgba(248, 113, 113, 0.18);
+  --notify-warn: #fbbf24;
+  --notify-warn-bg: rgba(251, 191, 36, 0.18);
+  --notify-info: #38bdf8;
+  --notify-info-bg: rgba(56, 189, 248, 0.18);
+}
+
+/* ============================================================================
+   1. TOAST CONTAINER & NOTIFICATIONS
+   ============================================================================ */
+#cpx-toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 420px;
+  width: calc(100vw - 32px);
+  pointer-events: none;
+  font-family: var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+}
+
+.cpx-toast {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--notify-surface);
+  border: 1px solid var(--notify-border);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  pointer-events: auto;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(110%) scale(0.95);
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1), margin 0.2s ease;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] .cpx-toast,
+body.dark-mode .cpx-toast {
+  box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.45), 0 6px 12px -4px rgba(0, 0, 0, 0.3);
+}
+
+.cpx-toast.show {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+.cpx-toast.hide {
+  opacity: 0;
+  transform: translateX(110%) scale(0.9);
+  pointer-events: none;
+}
+
+/* Toast Icon Badge */
+.cpx-toast__icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.cpx-toast__icon-badge svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.25;
+}
+
+/* Toast Variants */
+.cpx-toast--success {
+  border-left: 4px solid var(--notify-success);
+}
+.cpx-toast--success .cpx-toast__icon-badge {
+  background: var(--notify-success-bg);
+  color: var(--notify-success);
+}
+.cpx-toast--success .cpx-toast__progress {
+  background: var(--notify-success);
+}
+
+.cpx-toast--error {
+  border-left: 4px solid var(--notify-error);
+}
+.cpx-toast--error .cpx-toast__icon-badge {
+  background: var(--notify-error-bg);
+  color: var(--notify-error);
+}
+.cpx-toast--error .cpx-toast__progress {
+  background: var(--notify-error);
+}
+
+.cpx-toast--warning {
+  border-left: 4px solid var(--notify-warn);
+}
+.cpx-toast--warning .cpx-toast__icon-badge {
+  background: var(--notify-warn-bg);
+  color: var(--notify-warn);
+}
+.cpx-toast--warning .cpx-toast__progress {
+  background: var(--notify-warn);
+}
+
+.cpx-toast--info {
+  border-left: 4px solid var(--notify-info);
+}
+.cpx-toast--info .cpx-toast__icon-badge {
+  background: var(--notify-info-bg);
+  color: var(--notify-info);
+}
+.cpx-toast--info .cpx-toast__progress {
+  background: var(--notify-info);
+}
+
+/* Toast Content */
+.cpx-toast__content {
+  flex: 1;
+  min-width: 0;
+  padding-right: 4px;
+}
+
+.cpx-toast__title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--notify-text);
+  margin: 0 0 3px 0;
+  line-height: 1.35;
+}
+
+.cpx-toast__message {
+  font-size: 0.85rem;
+  color: var(--notify-text-muted);
+  margin: 0;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+/* Close Button */
+.cpx-toast__close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--notify-text-muted);
+  padding: 4px;
+  margin: -4px -4px 0 0;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+
+.cpx-toast__close-btn:hover {
+  background: var(--notify-surface-alt);
+  color: var(--notify-text);
+}
+
+.cpx-toast__close-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.2;
+}
+
+/* Countdown Progress Bar */
+.cpx-toast__progress-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+[data-theme="dark"] .cpx-toast__progress-wrapper {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.cpx-toast__progress {
+  height: 100%;
+  width: 100%;
+  transform-origin: left center;
+  animation: cpx-toast-shrink linear forwards;
+}
+
+.cpx-toast:hover .cpx-toast__progress {
+  animation-play-state: paused;
+}
+
+@keyframes cpx-toast-shrink {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* ============================================================================
+   2. CONFIRM MODAL (GLASSMORPHISM DIALOG)
+   ============================================================================ */
+#cpx-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999998;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.22s ease, visibility 0.22s ease;
+  font-family: var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+}
+
+#cpx-confirm-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cpx-confirm-modal {
+  background: #ffffff;
+  background-color: var(--notify-surface, #ffffff);
+  border: 1px solid var(--notify-border, #e2e8f0);
+  border-radius: 18px;
+  width: 100%;
+  max-width: 460px;
+  padding: 28px 24px 22px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  transform: translateY(16px) scale(0.95);
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] .cpx-confirm-modal,
+body.dark-mode .cpx-confirm-modal {
+  background: #1e293b;
+  background-color: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+#cpx-confirm-backdrop.active .cpx-confirm-modal {
+  transform: translateY(0) scale(1);
+}
+
+/* Confirm Icon Header */
+.cpx-confirm__icon-wrap {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cpx-confirm__icon-wrap svg {
+  width: 30px;
+  height: 30px;
+  stroke-width: 2.2;
+}
+
+.cpx-confirm--danger .cpx-confirm__icon-wrap {
+  background: var(--notify-error-bg);
+  color: var(--notify-error);
+  box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.08);
+}
+
+.cpx-confirm--warning .cpx-confirm__icon-wrap {
+  background: var(--notify-warn-bg);
+  color: var(--notify-warn);
+  box-shadow: 0 0 0 8px rgba(245, 158, 11, 0.08);
+}
+
+.cpx-confirm--primary .cpx-confirm__icon-wrap {
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--notify-primary);
+  box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.08);
+}
+
+/* Titles & Text */
+.cpx-confirm__title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--notify-text);
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
+}
+
+.cpx-confirm__message {
+  font-size: 0.92rem;
+  color: var(--notify-text-muted);
+  line-height: 1.55;
+  margin: 0 0 24px;
+}
+
+/* Buttons */
+.cpx-confirm__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.cpx-confirm__btn {
+  flex: 1;
+  padding: 11px 18px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  outline: none;
+}
+
+.cpx-confirm__btn--cancel {
+  background: var(--notify-surface-alt);
+  border-color: var(--notify-border);
+  color: var(--notify-text);
+}
+
+.cpx-confirm__btn--cancel:hover {
+  background: var(--notify-border);
+  color: var(--notify-text);
+}
+
+.cpx-confirm__btn--confirm {
+  color: #ffffff;
+}
+
+.cpx-confirm--danger .cpx-confirm__btn--confirm {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+}
+
+.cpx-confirm--danger .cpx-confirm__btn--confirm:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.45);
+  transform: translateY(-1px);
+}
+
+.cpx-confirm--warning .cpx-confirm__btn--confirm {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+}
+
+.cpx-confirm--warning .cpx-confirm__btn--confirm:hover {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.45);
+  transform: translateY(-1px);
+}
+
+.cpx-confirm--primary .cpx-confirm__btn--confirm {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+
+.cpx-confirm--primary .cpx-confirm__btn--confirm:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45);
+  transform: translateY(-1px);
+}
+
+.cpx-confirm__btn:focus-visible {
+  box-shadow: 0 0 0 3px var(--notify-primary-hover);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 480px) {
+  #cpx-toast-container {
+    top: 14px;
+    right: 14px;
+    left: 14px;
+    width: auto;
+  }
+  .cpx-confirm-modal {
+    padding: 22px 18px 18px;
+  }
+  .cpx-confirm__actions {
+    flex-direction: column-reverse;
+  }
+  .cpx-confirm__btn {
+    width: 100%;
+  }
+}
