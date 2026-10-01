@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'wishlist/toggle',
             'api/sepay/webhook',
             'sepay/webhook',
+            'api/payment/sandbox-simulate/*',
         ]);
 
         $middleware->alias([
