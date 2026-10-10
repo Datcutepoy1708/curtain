@@ -1,7 +1,8 @@
-﻿FROM php:8.2-cli-alpine
+FROM php:8.2-cli-alpine
 
-# Cài đặt extension cần thiết cho Laravel và MySQL
-RUN docker-php-ext-install pdo pdo_mysql bcmath
+# Cài đặt extension cần thiết cho Laravel, SQLite và MySQL
+RUN apk add --no-cache sqlite-dev \
+    && docker-php-ext-install pdo pdo_mysql pdo_sqlite bcmath
 
 # Lấy Composer từ image chính thức
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
