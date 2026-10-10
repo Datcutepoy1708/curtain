@@ -164,8 +164,9 @@ class AuthController extends Controller
 
     public function showAdminForgotPassword(Request $request)
     {
-        $isAdmin = true;
-        return view('auth.forgot-password', compact('isAdmin'));
+        return redirect()->route('admin.login')->withErrors([
+            'email' => 'Chức năng tự khôi phục mật khẩu quản trị đã bị vô hiệu hóa vì lý do bảo mật. Vui lòng liên hệ Quản trị viên hệ thống để cấp lại quyền truy cập.'
+        ]);
     }
 
     public function sendResetLink(Request $request)

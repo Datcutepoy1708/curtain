@@ -59,9 +59,9 @@
                         <!-- Switch to VietQR -->
                         <form action="{{ route('payment.change-method', ['orderCode' => $order->order_code]) }}" method="POST" style="margin: 0;">
                             @csrf
-                            <input type="hidden" name="payment_method" value="bank_transfer">
+                            <input type="hidden" name="payment_method" value="qr_code">
                             <button type="submit" style="width: 100%; background: #2563eb; color: #fff; border: none; padding: 12px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px;">
-                                <i class="fa-solid fa-qrcode"></i> Đổi Sang Chuyển Khoản Ngân Hàng (VietQR)
+                                <i class="fa-solid fa-qrcode"></i> Đổi Sang Thanh Toán Quét Mã QR (VietQR)
                             </button>
                         </form>
                     @endif

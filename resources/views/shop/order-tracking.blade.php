@@ -329,7 +329,7 @@
                                 <div><strong>Địa chỉ lắp:</strong> {{ $order->shipping_address }}</div>
                                 <div>
                                     <strong>Hình thức:</strong> 
-                                    {{ $order->payment_method === 'cod' ? 'Thanh toán khi nhận (COD)' : 'Chuyển khoản VietQR' }}
+                                    {{ $order->payment_method === 'cod' ? 'Thanh toán khi nhận (COD)' : ($order->payment_method === 'vnpay' ? 'Cổng VNPAY Online' : 'Quét Mã QR (VietQR)') }}
                                 </div>
                                 <div>
                                     <strong>Tổng tiền:</strong> 

@@ -234,23 +234,52 @@
 
                             <div class="form-field">
                                 <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px;">Phương Thức Thanh Toán *</label>
-                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+                                <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
                                     
-                                    <!-- 1. Bank Transfer VietQR Option (Mã QR Ngân Hàng MB) -->
-                                    <label style="display: flex; align-items: flex-start; gap: 10px; padding: 14px; border: 2px solid #2563eb; border-radius: var(--radius-sm); cursor: pointer; background: #eff6ff; transition: border-color 0.2s;">
-                                        <input type="radio" name="payment_method" value="bank_transfer" {{ old('payment_method', 'bank_transfer') === 'bank_transfer' ? 'checked' : '' }} style="margin-top: 3px;">
-                                        <div>
-                                            <div style="font-weight: 700; font-size: 13px; color: #1e40af;"><i class="fa-solid fa-qrcode" style="color: #2563eb;"></i> Chuyển Khoản Ngân Hàng (Mã QR VietQR)</div>
-                                            <div style="font-size: 12px; color: #3b82f6; margin-top: 2px;">Tự động tạo mã QR tài khoản MB Bank, quét mã bằng app ngân hàng nhận diện ngay 24/7.</div>
+                                    @if($bankTransferEnabled)
+                                    <!-- 1. Thanh toán quét mã QR (VietQR / MB Bank / MoMo) -->
+                                    <label class="payment-method-card {{ old('payment_method', 'qr_code') === 'qr_code' || old('payment_method') === 'bank_transfer' ? 'active' : '' }}" 
+                                           style="display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border: 2px solid {{ old('payment_method', 'qr_code') === 'qr_code' || old('payment_method') === 'bank_transfer' ? '#2563eb' : 'var(--border-line)' }}; border-radius: var(--radius-sm); cursor: pointer; background: {{ old('payment_method', 'qr_code') === 'qr_code' || old('payment_method') === 'bank_transfer' ? '#eff6ff' : '#ffffff' }}; transition: all 0.2s;">
+                                        <input type="radio" name="payment_method" value="qr_code" {{ old('payment_method', 'qr_code') === 'qr_code' || old('payment_method') === 'bank_transfer' ? 'checked' : '' }} style="margin-top: 3px;" onchange="updatePaymentCardStyles()">
+                                        <div style="flex: 1;">
+                                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
+                                                <div style="font-weight: 700; font-size: 14px; color: #1e40af;">
+                                                    <i class="fa-solid fa-qrcode" style="color: #2563eb; font-size: 16px;"></i> Thanh Toán Qua Mã QR (VietQR Napas 24/7)
+                                                </div>
+                                                <span style="display: inline-block; padding: 2px 8px; background: #2563eb; color: #fff; font-size: 10px; font-weight: 800; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px;">Khuyên dùng</span>
+                                            </div>
+                                            <div style="font-size: 12px; color: #3b82f6; margin-top: 4px; line-height: 1.4;">
+                                                Tạo mã QR động chính xác 100% số tiền & nội dung đơn hàng. Quét tức thì bằng <strong>mọi App Ngân Hàng</strong> (MB, Vietcombank, BIDV, Techcombank, VPBank,...) hoặc <strong>MoMo / ZaloPay</strong>.
+                                            </div>
+                                        </div>
+                                    </label>
+                                    @endif
+
+                                    <!-- 2. Cổng Thanh Toán Trực Tuyến VNPAY -->
+                                    <label class="payment-method-card {{ old('payment_method') === 'vnpay' ? 'active' : '' }}" 
+                                           style="display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border: 2px solid {{ old('payment_method') === 'vnpay' ? '#0284c7' : 'var(--border-line)' }}; border-radius: var(--radius-sm); cursor: pointer; background: {{ old('payment_method') === 'vnpay' ? '#f0f9ff' : '#ffffff' }}; transition: all 0.2s;">
+                                        <input type="radio" name="payment_method" value="vnpay" {{ old('payment_method') === 'vnpay' ? 'checked' : '' }} style="margin-top: 3px;" onchange="updatePaymentCardStyles()">
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 700; font-size: 14px; color: #0369a1;">
+                                                <i class="fa-solid fa-credit-card" style="color: #0284c7; font-size: 15px;"></i> Cổng Thanh Toán Trực Tuyến VNPAY (ATM / Visa / VNPAY-QR)
+                                            </div>
+                                            <div style="font-size: 12px; color: #0284c7; margin-top: 4px; line-height: 1.4;">
+                                                Thanh toán an toàn qua cổng VNPAY hỗ trợ thẻ ATM nội địa hơn 40 ngân hàng, thẻ quốc tế Visa/Master và VNPAY-QR.
+                                            </div>
                                         </div>
                                     </label>
 
-                                    <!-- 2. COD Option -->
-                                    <label style="display: flex; align-items: flex-start; gap: 10px; padding: 14px; border: 1px solid var(--border-line); border-radius: var(--radius-sm); cursor: pointer; background: #f8fafc; transition: border-color 0.2s;">
-                                        <input type="radio" name="payment_method" value="cod" {{ old('payment_method') === 'cod' ? 'checked' : '' }} style="margin-top: 3px;">
-                                        <div>
-                                            <div style="font-weight: 700; font-size: 13px; color: var(--text-main);"><i class="fa-solid fa-hand-holding-dollar" style="color: var(--accent-cta);"></i> Thanh Toán Tiền Mặt Khi Nhận & Lắp Đặt</div>
-                                            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Kiểm tra rèm chuẩn kích thước rồi mới thanh toán tiền mặt (COD).</div>
+                                    <!-- 3. Thanh Toán Tiền Mặt COD -->
+                                    <label class="payment-method-card {{ old('payment_method') === 'cod' ? 'active' : '' }}" 
+                                           style="display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border: 2px solid {{ old('payment_method') === 'cod' ? 'var(--accent-cta)' : 'var(--border-line)' }}; border-radius: var(--radius-sm); cursor: pointer; background: {{ old('payment_method') === 'cod' ? '#fffaf5' : '#ffffff' }}; transition: all 0.2s;">
+                                        <input type="radio" name="payment_method" value="cod" {{ old('payment_method') === 'cod' ? 'checked' : '' }} style="margin-top: 3px;" onchange="updatePaymentCardStyles()">
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 700; font-size: 14px; color: var(--text-main);">
+                                                <i class="fa-solid fa-hand-holding-dollar" style="color: var(--accent-cta); font-size: 16px;"></i> Thanh Toán Tiền Mặt Khi Nhận Hàng & Hoàn Tất Lắp Đặt (COD)
+                                            </div>
+                                            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.4;">
+                                                Kỹ thuật viên CurtainLux giao tận nơi và hoàn thiện lắp đặt đúng kích thước yêu cầu rồi mới thu tiền mặt.
+                                            </div>
                                         </div>
                                     </label>
                                 </div>
@@ -354,6 +383,30 @@
             alert('Có lỗi xảy ra khi cập nhật số lượng.');
         }
     }
+
+    function updatePaymentCardStyles() {
+        const cards = document.querySelectorAll('.payment-method-card');
+        cards.forEach(card => {
+            const radio = card.querySelector('input[type="radio"]');
+            if (radio && radio.checked) {
+                if (radio.value === 'qr_code' || radio.value === 'bank_transfer') {
+                    card.style.borderColor = '#2563eb';
+                    card.style.backgroundColor = '#eff6ff';
+                } else if (radio.value === 'vnpay') {
+                    card.style.borderColor = '#0284c7';
+                    card.style.backgroundColor = '#f0f9ff';
+                } else {
+                    card.style.borderColor = 'var(--accent-cta)';
+                    card.style.backgroundColor = '#fffaf5';
+                }
+            } else {
+                card.style.borderColor = 'var(--border-line)';
+                card.style.backgroundColor = '#ffffff';
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', updatePaymentCardStyles);
     </script>
 </body>
 </html>

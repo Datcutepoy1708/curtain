@@ -286,7 +286,7 @@ class CartController extends Controller
             'customer_email' => 'nullable|email|max:150',
             'shipping_address' => 'required|string|max:255',
             'notes' => 'nullable|string|max:500',
-            'payment_method' => 'required|in:cod,bank_transfer,vnpay',
+            'payment_method' => 'required|in:cod,bank_transfer,qr_code,vnpay',
         ], [
             'customer_name.required' => 'Vui lòng nhập họ và tên người nhận.',
             'customer_phone.required' => 'Vui lòng nhập số điện thoại liên hệ.',
@@ -295,12 +295,12 @@ class CartController extends Controller
             'payment_method.in' => 'Phương thức thanh toán được chọn không hợp lệ.',
         ]);
 
-        // Kiểm tra cài đặt hệ thống: Bật/Tắt thanh toán ngân hàng
+        // Kiểm tra cài đặt hệ thống: Bật/Tắt thanh toán ngân hàng / mã QR
         $bankTransferEnabled = Setting::get('enable_bank_transfer', '1') !== '0';
-        if ($validated['payment_method'] === 'bank_transfer' && !$bankTransferEnabled) {
+        if (in_array($validated['payment_method'], ['bank_transfer', 'qr_code']) && !$bankTransferEnabled) {
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['payment_method' => 'Phương thức chuyển khoản ngân hàng hiện đang bảo trì. Vui lòng chọn phương thức thanh toán tiền mặt khi nhận hàng (COD).']);
+                ->withErrors(['payment_method' => 'Phương thức thanh toán qua mã QR / chuyển khoản hiện đang bảo trì. Vui lòng chọn phương thức thanh toán tiền mặt khi nhận hàng (COD).']);
         }
 
         $sessionId = $this->getSessionId();
@@ -382,8 +382,8 @@ class CartController extends Controller
             return redirect()->route('payment.vnpay', ['orderCode' => $order->order_code]);
         }
 
-        $flashMsg = ($order->payment_method === 'bank_transfer')
-            ? 'Vui lòng hoàn tất chuyển khoản VietQR để xưởng may CurtainLux tiến hành đo may!'
+        $flashMsg = in_array($order->payment_method, ['bank_transfer', 'qr_code'])
+            ? 'Vui lòng quét mã QR chuyển khoản để xưởng may CurtainLux tiến hành xử lý ngay!'
             : 'Đặt may rèm thành công! Kỹ thuật viên CurtainLux sẽ liên hệ khảo sát trong 15 phút.';
 
         return redirect()->route('order.success', ['orderCode' => $order->order_code])

@@ -36,12 +36,7 @@
         </div>
 
         <div class="form-group">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <label for="password" class="form-label" style="margin-bottom: 0;">Mật khẩu quản trị *</label>
-                <a href="{{ route('admin.password.request') }}" style="font-size: 12px; color: var(--accent-cta); text-decoration: none; font-weight: 600;">
-                    Quên mật khẩu?
-                </a>
-            </div>
+            <label for="password" class="form-label">Mật khẩu quản trị *</label>
             <div class="input-container">
                 <input id="password" type="password" name="password" value="" placeholder="••••••••" required autocomplete="current-password">
                 <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password')" aria-label="Hiện/ẩn mật khẩu">

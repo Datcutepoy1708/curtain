@@ -181,7 +181,7 @@
                 <form action="{{ route('admin.orders.confirm-payment', $order->id) }}" method="POST" class="card-body">
                     @csrf
                     <div style="margin-bottom: 12px; font-size: 13px;">
-                        Phương thức thanh toán: <strong>{{ strtoupper($order->payment_method) }}</strong>
+                        Phương thức thanh toán: <strong>{{ in_array($order->payment_method, ['bank_transfer', 'qr_code']) ? 'QUÉT MÃ QR (VIETQR)' : strtoupper($order->payment_method) }}</strong>
                     </div>
 
                     <div style="margin-bottom: 16px;">

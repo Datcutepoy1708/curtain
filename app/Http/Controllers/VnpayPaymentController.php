@@ -114,7 +114,7 @@ class VnpayPaymentController extends Controller
     public function changeMethod(Request $request, $orderCode)
     {
         $validated = $request->validate([
-            'payment_method' => 'required|in:cod,bank_transfer',
+            'payment_method' => 'required|in:cod,bank_transfer,qr_code',
         ]);
 
         $order = Order::where('order_code', strtoupper(trim($orderCode)))->firstOrFail();
@@ -125,9 +125,9 @@ class VnpayPaymentController extends Controller
             'payment_status' => 'pending',
         ]);
 
-        if ($validated['payment_method'] === 'bank_transfer') {
+        if (in_array($validated['payment_method'], ['bank_transfer', 'qr_code'])) {
             return redirect()->route('order.success', $order->order_code)
-                ->with('success', 'Đã chuyển sang phương thức Chuyển khoản VietQR MBBank.');
+                ->with('success', 'Đã chuyển sang phương thức Quét Mã QR VietQR MBBank 24/7.');
         }
 
         return redirect()->route('order.success', $order->order_code)

@@ -45,7 +45,7 @@
                                 </tr>
                                 <tr>
                                     <td style="font-size: 14px; padding-bottom: 8px;">
-                                        <strong>Phương thức:</strong> {{ $order->payment_method === 'cod' ? 'Thanh toán tiền mặt khi nhận rèm (COD)' : 'Chuyển khoản Ngân hàng (VietQR MB Bank)' }}
+                                        <strong>Phương thức:</strong> {{ $order->payment_method === 'cod' ? 'Thanh toán tiền mặt khi nhận rèm (COD)' : ($order->payment_method === 'vnpay' ? 'Cổng thanh toán VNPAY' : 'Thanh toán Quét Mã QR (VietQR MBBank)') }}
                                     </td>
                                 </tr>
                                 <tr>

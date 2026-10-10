@@ -207,8 +207,8 @@
             </h3>
             <div style="font-size: 13px; line-height: 1.8; color: var(--text-main);">
                 <div><strong>Hình thức:</strong> 
-                    @if($order->payment_method === 'bank_transfer')
-                        Chuyển Khoản Ngân Hàng (VietQR MBBank)
+                    @if(in_array($order->payment_method, ['bank_transfer', 'qr_code']))
+                        Thanh Toán Quét Mã QR (VietQR Napas 24/7)
                     @elseif($order->payment_method === 'vnpay')
                         Cổng Trực Tuyến VNPAY (Sandbox)
                     @else

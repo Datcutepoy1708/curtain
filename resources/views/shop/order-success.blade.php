@@ -502,16 +502,21 @@
                 </div>
 
                 <h1 id="page-main-title" class="success-title">
-                    {{ $isPaidOrCod ? 'Tạo Đơn Hàng May Rèm Thành Công!' : 'Chờ Thanh Toán Chuyển Khoản' }}
+                    {{ $isPaidOrCod ? 'Tạo Đơn Hàng May Rèm Thành Công!' : 'Quét Mã QR Chuyển Khoản Đơn Hàng' }}
                 </h1>
 
                 <p id="page-main-sub" class="success-sub">
-                    @if($isPaidOrCod)
+                    @if($order->payment_status === 'paid')
+                        Cảm ơn quý khách <strong>{{ $order->customer_name }}</strong>! Đơn hàng đã được thanh toán thành công và chuyển sang bộ phận may đo xưởng.
+                    @elseif(in_array($order->payment_method, ['bank_transfer', 'qr_code']))
+                        Vui lòng mở ứng dụng Ngân hàng hoặc Ví điện tử và quét mã VietQR bên dưới để thanh toán.<br>
+                        Ngay sau khi nhận tiền, hệ thống sẽ <strong>tự động đối soát và kích hoạt đơn may đo ngay lập tức</strong>.
+                    @elseif($order->payment_method === 'cod')
                         Cảm ơn quý khách <strong>{{ $order->customer_name }}</strong> đã tin tưởng đặt may tại <strong>CurtainLux</strong>.<br>
-                        Đơn hàng của bạn đã được tiếp nhận và xưởng may đang chuẩn bị phụ kiện & lên lịch khảo sát.
+                        Đơn hàng của bạn đã được tiếp nhận và xưởng may đang chuẩn bị phụ kiện & lên lịch khảo sát tận nơi.
                     @else
-                        Vui lòng mở ứng dụng Ngân hàng bất kỳ và quét mã VietQR bên dưới để hoàn tất chuyển khoản.<br>
-                        Ngay sau khi nhận tiền, hệ thống sẽ <strong>tự động đối soát và xác nhận đơn hàng</strong>.
+                        Cảm ơn quý khách <strong>{{ $order->customer_name }}</strong> đã đặt may tại <strong>CurtainLux</strong>.<br>
+                        Đơn hàng đã được tiếp nhận và lưu trữ trong hệ thống.
                     @endif
                 </p>
 
@@ -540,7 +545,7 @@
             </div>
 
             <!-- 2. BANK TRANSFER INSTRUCTIONS & VIETQR (Complexus System) -->
-            @if($order->payment_method === 'bank_transfer')
+            @if(in_array($order->payment_method, ['bank_transfer', 'qr_code']))
             <div id="bank-box" class="bank-box" style="{{ $order->payment_status === 'paid' ? 'display: none;' : 'display: block;' }}">
                 <div class="bank-box-header">
                     <i class="fa-solid fa-qrcode" style="font-size: 20px;"></i>
@@ -644,7 +649,13 @@
                     <div><strong>Email:</strong> {{ $order->customer_email ?: 'Chưa cung cấp' }}</div>
                     <div>
                         <strong>Phương thức thanh toán:</strong> 
-                        {{ $order->payment_method === 'cod' ? 'Thanh toán khi nhận hàng / nghiệm thu lắp đặt' : 'Chuyển khoản Ngân hàng (VietQR)' }}
+                        @if($order->payment_method === 'cod')
+                            Thanh toán khi nhận hàng (COD)
+                        @elseif($order->payment_method === 'vnpay')
+                            Cổng thanh toán VNPAY Online
+                        @else
+                            Thanh toán Quét Mã QR (VietQR Napas 24/7)
+                        @endif
                     </div>
                     <div>
                         <strong>Trạng thái thanh toán:</strong> 
@@ -717,7 +728,7 @@
 
     <script>
         const orderCode = '{{ $order->order_code }}';
-        const isBankTransfer = {{ $order->payment_method === 'bank_transfer' ? 'true' : 'false' }};
+        const isBankTransfer = {{ in_array($order->payment_method, ['bank_transfer', 'qr_code']) ? 'true' : 'false' }};
         let isPaid = {{ $order->payment_status === 'paid' ? 'true' : 'false' }};
         let pollTimer = null;
         let isChecking = false;
