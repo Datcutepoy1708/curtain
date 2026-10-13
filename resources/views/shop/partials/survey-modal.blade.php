@@ -60,7 +60,7 @@
                     <option value="" {{ empty($selectedProvince) ? 'selected' : '' }} disabled>-- Vui lòng chọn Tỉnh / Thành phố của bạn --</option>
                     @foreach($provinces as $pCode => $pName)
                         <option value="{{ $pCode }}" {{ $selectedProvince === (string)$pCode ? 'selected' : '' }}>
-                            {{ $pName }} {{ in_array((string)$pCode, $homeSurveyCodes, true) ? '★ (Khảo sát tận nhà)' : '⚡ (Tư vấn từ xa 1-1 + Hộp mẫu)' }}
+                            {{ $pName }} {{ in_array((string)$pCode, $homeSurveyCodes, true) ? '(Khảo sát tận nhà)' : '(Tư vấn từ xa 1-1 + Hộp mẫu)' }}
                         </option>
                     @endforeach
                 </select>
