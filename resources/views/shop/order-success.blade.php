@@ -441,6 +441,259 @@
             color: #ffffff;
         }
 
+        /* CANCEL CONFIRMATION & SUCCESS MODAL (Japandi Warm Neutral) */
+        .custom-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(44, 39, 36, 0.55);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 99999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: modalFadeIn 0.25s ease-out;
+        }
+
+        .custom-modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .custom-modal-dialog {
+            background: #ffffff;
+            border-radius: 18px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(44, 39, 36, 0.25);
+            border: 1px solid var(--border-line, #e8e2d9);
+            overflow: hidden;
+            animation: modalSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalSlideUp {
+            from { transform: translateY(24px) scale(0.97); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .custom-modal-header {
+            padding: 22px 26px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #f1ece4;
+        }
+
+        .custom-modal-header.danger-header {
+            background: #fef2f2;
+        }
+
+        .custom-modal-header.success-header {
+            background: #f0fdf4;
+        }
+
+        .modal-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-title-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .danger-header .modal-title-icon {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .success-header .modal-title-icon {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .modal-title-text h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-main, #2c2724);
+            margin: 0;
+        }
+
+        .modal-title-text span {
+            font-size: 12.5px;
+            color: var(--text-muted, #7a726d);
+        }
+
+        .btn-modal-close {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            color: #94a3b8;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-modal-close:hover {
+            background: rgba(0,0,0,0.06);
+            color: #334155;
+        }
+
+        .custom-modal-body {
+            padding: 22px 26px;
+        }
+
+        .modal-order-badge {
+            background: #faf7f2;
+            border: 1px solid #e8e2d9;
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            font-size: 13.5px;
+        }
+
+        .modal-order-badge strong {
+            color: var(--text-main, #2c2724);
+        }
+
+        .modal-order-badge .amount {
+            color: #b86b53;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .modal-warning-box {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #92400e;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        .modal-field-group {
+            margin-bottom: 16px;
+        }
+
+        .modal-field-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main, #2c2724);
+            margin-bottom: 6px;
+        }
+
+        .modal-select, .modal-textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 13.5px;
+            color: #1e293b;
+            background: #ffffff;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .modal-select:focus, .modal-textarea:focus {
+            border-color: #b86b53;
+            box-shadow: 0 0 0 3px rgba(184, 107, 83, 0.12);
+        }
+
+        .custom-modal-footer {
+            padding: 16px 26px;
+            background: #faf7f2;
+            border-top: 1px solid #f1ece4;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-modal-cancel {
+            padding: 10px 18px;
+            border-radius: 8px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-modal-cancel:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .btn-modal-confirm-danger {
+            padding: 10px 20px;
+            border-radius: 8px;
+            background: #dc2626;
+            border: none;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-modal-confirm-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-modal-primary {
+            padding: 10px 20px;
+            border-radius: 8px;
+            background: var(--accent-cta, #b86b53);
+            border: none;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-modal-primary:hover {
+            background: #9e5640;
+            color: #ffffff;
+        }
+
         /* SANDBOX SIMULATOR BOX (Complexus feature) */
         .sandbox-payment-bar {
             background: #fffbeb;
@@ -715,7 +968,7 @@
                         <button type="button" id="btn-manual-check" class="btn-check-manual" onclick="checkPaymentStatusManual()">
                             <i class="fa-solid fa-arrows-rotate"></i> Kiểm tra ngay
                         </button>
-                        <button type="button" id="btn-cancel-order" class="btn-cancel-order" onclick="cancelTransaction()">
+                        <button type="button" id="btn-cancel-order" class="btn-cancel-order" onclick="openCancelConfirmModal()">
                             <i class="fa-solid fa-ban"></i> Hủy giao dịch
                         </button>
                     </div>
@@ -824,6 +1077,104 @@
 
     <!-- COPY TOAST NOTIFICATION -->
     <div id="copyToast" class="copy-toast">Đã sao chép vào bộ nhớ tạm!</div>
+
+    <!-- MODAL 1: XÁC NHẬN HỦY GIAO DỊCH -->
+    <div id="cancelConfirmModal" class="custom-modal-overlay">
+        <div class="custom-modal-dialog">
+            <div class="custom-modal-header danger-header">
+                <div class="modal-title-wrap">
+                    <div class="modal-title-icon">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="modal-title-text">
+                        <h3>Xác Nhận Hủy Giao Dịch</h3>
+                        <span>Đơn hàng may đo #{{ $order->order_code }}</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-modal-close" onclick="closeCancelConfirmModal()">&times;</button>
+            </div>
+            <div class="custom-modal-body">
+                <div class="modal-order-badge">
+                    <span>Mã đơn: <strong>{{ $order->order_code }}</strong></span>
+                    <span class="amount">{{ number_format($order->total_amount, 0, ',', '.') }} ₫</span>
+                </div>
+
+                <div class="modal-warning-box">
+                    <i class="fa-solid fa-circle-info" style="margin-right: 4px;"></i>
+                    Toàn bộ thông tin kích thước và số lượng phôi rèm đã giữ chỗ sẽ được hoàn lại kho. Sau khi xác nhận, giao dịch này sẽ kết thúc.
+                </div>
+
+                <div class="modal-field-group">
+                    <label for="cancel-reason-select">Lý do bạn muốn hủy đơn:</label>
+                    <select id="cancel-reason-select" class="modal-select">
+                        <option value="Tôi muốn đổi phương thức thanh toán khác">Tôi muốn đổi phương thức thanh toán khác</option>
+                        <option value="Tôi muốn thay đổi kích thước / số lượng ô cửa">Tôi muốn thay đổi kích thước / số lượng ô cửa</option>
+                        <option value="Tôi muốn đổi sang mẫu vải rèm khác">Tôi muốn đổi sang mẫu vải rèm khác</option>
+                        <option value="Chưa sẵn sàng thanh toán chuyển khoản lúc này">Chưa sẵn sàng thanh toán chuyển khoản lúc này</option>
+                        <option value="Lý do khác">Lý do khác</option>
+                    </select>
+                </div>
+
+                <div class="modal-field-group">
+                    <label for="cancel-reason-notes">Ghi chú thêm (không bắt buộc):</label>
+                    <textarea id="cancel-reason-notes" class="modal-textarea" rows="2" placeholder="Nhập thêm chi tiết nếu cần..."></textarea>
+                </div>
+            </div>
+            <div class="custom-modal-footer">
+                <button type="button" class="btn-modal-cancel" onclick="closeCancelConfirmModal()">
+                    <i class="fa-solid fa-arrow-left"></i> Tiếp Tục Thanh Toán
+                </button>
+                <button type="button" id="btn-submit-cancel" class="btn-modal-confirm-danger" onclick="submitCancelTransaction()">
+                    <i class="fa-solid fa-ban"></i> Xác Nhận Hủy Đơn
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: THÔNG BÁO RIÊNG KHI HỦY THÀNH CÔNG -->
+    <div id="cancelSuccessModal" class="custom-modal-overlay">
+        <div class="custom-modal-dialog">
+            <div class="custom-modal-header success-header">
+                <div class="modal-title-wrap">
+                    <div class="modal-title-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div class="modal-title-text">
+                        <h3>Đã Hủy Giao Dịch Thành Công</h3>
+                        <span>Hệ thống đã cập nhật đối soát đơn hàng</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-modal-close" onclick="closeCancelSuccessModal()">&times;</button>
+            </div>
+            <div class="custom-modal-body" style="text-align: center; padding: 28px 24px;">
+                <div style="width: 64px; height: 64px; border-radius: 50%; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px;">
+                    <i class="fa-solid fa-ban"></i>
+                </div>
+                <h4 style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 0 0 8px;">Giao dịch đã được hủy an toàn</h4>
+                <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin: 0 0 20px;">
+                    Đơn hàng <strong>#{{ $order->order_code }}</strong> đã dừng thanh toán chuyển khoản.<br>
+                    Toàn bộ số lượng vải & phụ kiện rèm đã được tự động hoàn trả lại tồn kho của xưởng may.
+                </p>
+
+                <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 12px 18px; display: inline-flex; gap: 20px; font-size: 13px; color: #475569;">
+                    <span>Trạng thái: <strong style="color: #dc2626;">Đã hủy</strong></span>
+                    <span>Thanh toán: <strong style="color: #dc2626;">Đã dừng</strong></span>
+                    <span>Tồn kho: <strong style="color: #16a34a;">Đã hoàn trả</strong></span>
+                </div>
+            </div>
+            <div class="custom-modal-footer" style="justify-content: center; flex-wrap: wrap;">
+                <a href="/" class="btn-modal-primary">
+                    <i class="fa-solid fa-house"></i> Về Trang Chủ
+                </a>
+                <a href="/gio-hang" class="btn-modal-cancel" style="display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-cart-shopping"></i> Đặt May Đơn Khác
+                </a>
+                <button type="button" class="btn-modal-cancel" onclick="closeCancelSuccessModal()">
+                    Đóng Thông Báo
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
         const orderCode = '{{ $order->order_code }}';
@@ -935,16 +1286,41 @@
             });
         };
 
-        // Cancel Transaction / Order
-        window.cancelTransaction = function() {
-            if (!confirm('Bạn có chắc chắn muốn hủy giao dịch và đơn hàng #' + orderCode + ' không? Toàn bộ phôi rèm sẽ được hoàn lại kho.')) {
-                return;
+        // Modal Control Functions
+        window.openCancelConfirmModal = function() {
+            const modal = document.getElementById('cancelConfirmModal');
+            if (modal) modal.classList.add('active');
+        };
+
+        window.closeCancelConfirmModal = function() {
+            const modal = document.getElementById('cancelConfirmModal');
+            if (modal) modal.classList.remove('active');
+        };
+
+        window.openCancelSuccessModal = function() {
+            const modal = document.getElementById('cancelSuccessModal');
+            if (modal) modal.classList.add('active');
+        };
+
+        window.closeCancelSuccessModal = function() {
+            const modal = document.getElementById('cancelSuccessModal');
+            if (modal) modal.classList.remove('active');
+        };
+
+        // Submit Cancel Transaction from Modal
+        window.submitCancelTransaction = function() {
+            const btn = document.getElementById('btn-submit-cancel');
+            const selectReason = document.getElementById('cancel-reason-select');
+            const notesInput = document.getElementById('cancel-reason-notes');
+            
+            let fullReason = selectReason ? selectReason.value : 'Khách hủy tại màn hình VietQR';
+            if (notesInput && notesInput.value.trim()) {
+                fullReason += ' (' + notesInput.value.trim() + ')';
             }
 
-            const btn = document.getElementById('btn-cancel-order');
             if (btn) {
                 btn.disabled = true;
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang hủy...';
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
             }
 
             fetch('/api/order/cancel/' + encodeURIComponent(orderCode), {
@@ -954,20 +1330,30 @@
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify({ reason: 'Khách hàng bấm hủy tại màn hình VietQR' })
+                body: JSON.stringify({ reason: fullReason })
             })
             .then(res => res.json())
             .then(json => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-ban"></i> Xác Nhận Hủy Đơn';
+                }
+
                 if (json.success) {
                     if (pollTimer) clearInterval(pollTimer);
-                    showToast('Đã hủy giao dịch thành công!');
+                    
+                    // 1. Close Confirm Modal & Open Dedicated Success Modal
+                    closeCancelConfirmModal();
+                    openCancelSuccessModal();
 
+                    // 2. Hide Bank Box & Show Cancelled Banner
                     const bankBox = document.getElementById('bank-box');
                     if (bankBox) bankBox.style.display = 'none';
 
                     const cancelledBanner = document.getElementById('cancelled-banner');
                     if (cancelledBanner) cancelledBanner.style.display = 'flex';
 
+                    // 3. Update Status Badges
                     const badgeEl = document.getElementById('payment-status-badge');
                     if (badgeEl) {
                         badgeEl.style.color = '#dc2626';
@@ -991,18 +1377,14 @@
                     }
                 } else {
                     alert(json.message || 'Không thể hủy giao dịch.');
-                    if (btn) {
-                        btn.disabled = false;
-                        btn.innerHTML = '<i class="fa-solid fa-ban"></i> Hủy giao dịch';
-                    }
                 }
             })
             .catch(err => {
-                alert('Có lỗi kết nối máy chủ khi gửi yêu cầu hủy.');
                 if (btn) {
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fa-solid fa-ban"></i> Hủy giao dịch';
+                    btn.innerHTML = '<i class="fa-solid fa-ban"></i> Xác Nhận Hủy Đơn';
                 }
+                alert('Có lỗi kết nối máy chủ khi gửi yêu cầu hủy.');
             });
         };
 
