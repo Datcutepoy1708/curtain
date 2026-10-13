@@ -56,7 +56,7 @@ class SocialAuthController extends Controller
                 'client_id' => $clientId,
                 'redirect_uri' => $redirectUri,
                 'response_type' => 'code',
-                'scope' => 'email,public_profile',
+                'scope' => 'public_profile',
                 'state' => $state,
             ])),
 
