@@ -28,7 +28,7 @@ class RoleSeeder extends Seeder
                 'permissions' => [
                     'products.view', 'products.create', 'products.edit', 'options.manage',
                     'orders.view', 'orders.status',
-                    'consultations.view', 'consultations.assign',
+                    'consultations.view', 'consultations.assign', 'consultations.update', 'consultations.measurement.manage',
                     'banners.manage', 'news.manage', 'discounts.manage',
                     'customers.view', 'reviews.manage', 'statistics.view',
                 ],

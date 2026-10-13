@@ -151,7 +151,9 @@ class User extends Authenticatable
                 'label' => 'Khảo Sát & Đo Đạc Tận Nhà',
                 'permissions' => [
                     'consultations.view' => 'Xem danh sách lịch hẹn đo đạc',
-                    'consultations.assign' => 'Phân công & cập nhật kết quả đo',
+                    'consultations.assign' => 'Phân công nhân viên phụ trách',
+                    'consultations.update' => 'Cập nhật tiến trình & vận đơn hộp mẫu',
+                    'consultations.measurement.manage' => 'Thẩm định số đo & Bảo hiểm vừa vặn',
                     'consultations.delete' => 'Xóa lịch hẹn khảo sát',
                 ]
             ],

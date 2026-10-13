@@ -224,7 +224,17 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     Route::middleware('permission:consultations.assign')->group(function () {
         Route::post('/consultations/{id}/status', [AdminConsultationController::class, 'updateStatus'])->name('consultations.update-status');
+    });
 
+    Route::middleware('permission:consultations.update')->group(function () {
+        Route::put('/consultations/{id}/sample-box', [AdminConsultationController::class, 'updateSampleBox'])->name('consultations.update-sample-box');
+    });
+
+    Route::middleware('permission:consultations.measurement.manage')->group(function () {
+        Route::put('/consultations/{id}/measurement', [AdminConsultationController::class, 'updateMeasurement'])->name('consultations.update-measurement');
+    });
+
+    Route::middleware('permission:consultations.assign')->group(function () {
         // Window measurements
         Route::post('/consultations/{id}/windows', [\App\Http\Controllers\Admin\ConsultationWindowController::class, 'store'])->name('consultation-windows.store');
         Route::put('/consultation-windows/{id}', [\App\Http\Controllers\Admin\ConsultationWindowController::class, 'update'])->name('consultation-windows.update');

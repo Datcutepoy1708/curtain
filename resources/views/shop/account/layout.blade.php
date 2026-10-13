@@ -112,5 +112,6 @@
     </div>
 
     @include('shop.partials.footer')
+    <script src="{{ asset('js/shop.js') }}"></script>
 </body>
 </html>

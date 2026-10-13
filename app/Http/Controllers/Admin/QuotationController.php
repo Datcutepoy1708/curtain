@@ -33,6 +33,13 @@ class QuotationController extends Controller
             return redirect()->back()->with('error', 'Chưa có ô cửa đo đạc nào! Vui lòng thêm ít nhất một ô cửa trước khi lập báo giá.');
         }
 
+        // Điều kiện lập báo giá theo hình thức phục vụ
+        if ($consultation->service_mode === Consultation::SERVICE_MODE_REMOTE) {
+            if (!in_array($consultation->measurement_status, [Consultation::MEASUREMENT_CONFIRMED, Consultation::MEASUREMENT_SELF], true)) {
+                return redirect()->back()->with('error', 'Lịch tư vấn từ xa chưa hoàn tất chốt số đo! Cần cập nhật tiến độ đo đạc (Đã chốt số đo video hoặc Khách tự đo) trước khi lập báo giá.');
+            }
+        }
+
         $latestQuotation = Quotation::where('consultation_id', $consultation->id)->orderBy('version', 'desc')->first();
         if ($latestQuotation && in_array($latestQuotation->status, ['draft', 'accepted', 'converted'])) {
             return redirect()->back()->with('error', 'Hãy hoàn tất bản nháp hiện tại trước khi tạo phiên bản mới.');

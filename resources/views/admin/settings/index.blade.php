@@ -53,6 +53,64 @@
             </div>
         </div>
 
+        <!-- Home Survey Coverage (34 Official Provinces) -->
+        @php
+            $allProvinces = config('provinces', []);
+            $savedProvinceCodes = json_decode($settings['home_survey_province_codes'] ?? '[]', true) ?: [];
+        @endphp
+        <div class="card" style="margin-bottom: 0;">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div class="card-title">
+                    <i class="fa-solid fa-map-location-dot" style="color: var(--brand, #b8935c);"></i>
+                    Phạm Vi Khảo Sát Tận Nhà (34 Tỉnh / Thành Phố)
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectMajorHubs()" style="font-size: 12px; padding: 5px 12px;">
+                        <i class="fa-solid fa-star"></i> Chọn Hà Nội & TP.HCM
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="toggleAllProvinces(true)" style="font-size: 12px; padding: 5px 12px;">
+                        Chọn Tất Cả
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="toggleAllProvinces(false)" style="font-size: 12px; padding: 5px 12px;">
+                        Bỏ Chọn Hết
+                    </button>
+                </div>
+            </div>
+            <div class="card-body" style="display: flex; flex-direction: column; gap: 14px;">
+                <input type="hidden" name="has_home_survey_config" value="1">
+                <div style="background: #f8fafc; padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 13px; color: var(--on-surface-variant); display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-circle-info" style="color: #2563eb; font-size: 16px;"></i>
+                    <span>Tích chọn các tỉnh/thành phố có nhân viên mang cây mẫu tận nơi. Khách hàng ở các tỉnh <strong>không tích</strong> sẽ tự động chuyển sang luồng <strong>Tư vấn từ xa 1-1 qua Video Call & gửi hộp mẫu vải miễn phí</strong>.</span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; max-height: 320px; overflow-y: auto; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fafafa;">
+                    @foreach($allProvinces as $pCode => $pName)
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer; padding: 6px 10px; border-radius: 6px; background: #ffffff; border: 1px solid #e2e8f0;">
+                            <input type="checkbox" name="home_survey_province_codes[]" value="{{ $pCode }}"
+                                   class="province-chk"
+                                   data-code="{{ $pCode }}"
+                                   {{ in_array((string)$pCode, $savedProvinceCodes, true) ? 'checked' : '' }}
+                                   style="width: 16px; height: 16px; accent-color: var(--brand, #b8935c); cursor: pointer;">
+                            <span>{{ $pName }}</span>
+                            <span style="font-size: 11px; color: #94a3b8; margin-left: auto;">({{ $pCode }})</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function toggleAllProvinces(checked) {
+                document.querySelectorAll('.province-chk').forEach(el => el.checked = checked);
+            }
+            function selectMajorHubs() {
+                document.querySelectorAll('.province-chk').forEach(el => {
+                    const code = el.getAttribute('data-code');
+                    el.checked = (code === '01' || code === '79');
+                });
+            }
+        </script>
+
         <!-- Bank Transfer Details & Toggle Switch -->
         <div class="card" style="margin-bottom: 0;">
             <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">

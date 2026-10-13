@@ -13,9 +13,14 @@
         <i class="fa-solid fa-arrow-left"></i> Quay lại danh sách lịch hẹn
     </a>
 
-    <div style="display: flex; gap: 10px; align-items: center;">
-        <span style="font-size: 13px; color: var(--on-surface-variant);">Trạng thái cuộc hẹn:</span>
-        @php $badge = $consultation->status_badge; @endphp
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        @php
+            $badge = $consultation->status_badge;
+            $modeBadge = $consultation->service_mode_badge;
+        @endphp
+        <span style="background: {{ $modeBadge['bg'] }}; color: {{ $modeBadge['color'] }}; font-size: 13px; font-weight: 800; padding: 6px 16px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fa-solid {{ $modeBadge['icon'] }}"></i> {{ $modeBadge['label'] }}
+        </span>
         <span style="background: {{ $badge['bg'] }}; color: {{ $badge['color'] }}; font-size: 13px; font-weight: 800; padding: 6px 16px; border-radius: 999px;">
             {{ $badge['label'] }}
         </span>
@@ -57,9 +62,44 @@
                 </div>
 
                 <div style="background: #f8fafc; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 13px; line-height: 1.5;">
-                    <strong><i class="fa-solid fa-location-dot" style="color: #ef4444;"></i> Địa chỉ:</strong> {{ $consultation->address }}, {{ $consultation->district ? $consultation->district . ', ' : '' }}{{ $consultation->city }}
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                        <div>
+                            <strong><i class="fa-solid fa-location-dot" style="color: #ef4444;"></i> Địa chỉ:</strong>
+                            {{ $consultation->address }}, <strong>{{ $consultation->province_name ?: $consultation->city }}</strong>
+                            @if($consultation->province_code)
+                                <span style="font-size: 11px; color: #64748b;">(Mã tỉnh: {{ $consultation->province_code }})</span>
+                            @endif
+                        </div>
+                        <div>
+                            <span style="background: {{ $consultation->isRemote() ? '#e0f2fe' : '#dcfce7' }}; color: {{ $consultation->isRemote() ? '#0284c7' : '#15803d' }}; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px;">
+                                <i class="fa-solid {{ $consultation->isRemote() ? 'fa-video' : 'fa-house-chimney-user' }}"></i>
+                                {{ $consultation->isRemote() ? 'Tư vấn từ xa' : 'Khảo sát tận nhà' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    @if($consultation->isRemote())
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 12px;">
+                            <div>
+                                <span style="color: #64748b;">Phương thức kết nối:</span>
+                                <strong>{{ $consultation->contact_method === 'zalo_video' ? 'Zalo Video Call 1-1' : ($consultation->contact_method === 'google_meet' ? 'Google Meet' : 'Gọi điện thoại') }}</strong>
+                            </div>
+                            <div>
+                                <span style="color: #64748b;">Phương án lắp đặt:</span>
+                                <strong>
+                                    {{ match($consultation->installation_method) {
+                                        'self_install' => 'Khách tự lắp đặt theo video',
+                                        'customer_arranged' => 'Khách thuê thợ địa phương',
+                                        'need_installation_advice' => 'Cần CurtainLux kết nối thợ',
+                                        default => $consultation->installation_method ?: 'Chưa định'
+                                    } }}
+                                </strong>
+                            </div>
+                        </div>
+                    @endif
+
                     @if($consultation->notes)
-                        <div style="margin-top: 6px; color: #64748b;">
+                        <div style="margin-top: 8px; color: #64748b;">
                             <strong><i class="fa-regular fa-comment-dots"></i> Yêu cầu khách:</strong> {{ $consultation->notes }}
                         </div>
                     @endif
@@ -482,6 +522,117 @@
                 </button>
             </form>
         </div>
+
+        <!-- Sample Box Management (Only for Remote or if requested) -->
+        @if($consultation->isRemote() || $consultation->sample_box_requested)
+            <div class="card" style="margin-bottom: 0;">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="card-title" style="font-size: 14px;">
+                        <i class="fa-solid fa-box-open" style="color: #ea580c;"></i> Hộp Mẫu Vải Về Tận Nhà
+                    </div>
+                    @php $boxBadge = $consultation->sample_box_badge; @endphp
+                    <span style="background: {{ $boxBadge['bg'] }}; color: {{ $boxBadge['color'] }}; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px;">
+                        {{ $boxBadge['label'] }}
+                    </span>
+                </div>
+                <form action="{{ route('admin.consultations.update-sample-box', $consultation->id) }}" method="POST" class="card-body">
+                    @csrf
+                    @method('PUT')
+
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px;">Trạng Thái Hộp Mẫu:</label>
+                        <select name="sample_box_status" style="width: 100%; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 13px;">
+                            <option value="none" {{ $consultation->sample_box_status === 'none' ? 'selected' : '' }}>0. Không gửi hộp mẫu</option>
+                            <option value="pending" {{ $consultation->sample_box_status === 'pending' ? 'selected' : '' }}>1. Chờ đóng gói & gửi đi</option>
+                            <option value="shipped" {{ $consultation->sample_box_status === 'shipped' ? 'selected' : '' }}>2. Đã giao bưu cục vận chuyển</option>
+                            <option value="delivered" {{ $consultation->sample_box_status === 'delivered' ? 'selected' : '' }}>3. Khách đã nhận được mẫu</option>
+                            <option value="cancelled" {{ $consultation->sample_box_status === 'cancelled' ? 'selected' : '' }}>4. Đã hủy gửi hộp mẫu</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px;">Mã Vận Đơn Vận Chuyển:</label>
+                        <input type="text" name="shipping_tracking_code" value="{{ $consultation->shipping_tracking_code }}" placeholder="VD: VNPOST123456 / SPX..."
+                               style="width: 100%; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 13px;">
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-secondary btn-sm" style="width: 100%; justify-content: center;">
+                        <i class="fa-solid fa-truck-ramp-box"></i> Cập Nhật Vận Đơn
+                    </button>
+                </form>
+            </div>
+        @endif
+
+        <!-- Measurement & Fit Guarantee Management (For Remote Consultations) -->
+        @if($consultation->isRemote())
+            <div class="card" style="margin-bottom: 0;">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="card-title" style="font-size: 14px;">
+                        <i class="fa-solid fa-video" style="color: #2563eb;"></i> Đo Đạc Video & Bảo Hiểm
+                    </div>
+                    @php $measBadge = $consultation->measurement_badge; @endphp
+                    <span style="background: {{ $measBadge['bg'] }}; color: {{ $measBadge['color'] }}; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px;">
+                        {{ $measBadge['label'] }}
+                    </span>
+                </div>
+                <form action="{{ route('admin.consultations.update-measurement', $consultation->id) }}" method="POST" class="card-body">
+                    @csrf
+                    @method('PUT')
+
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px;">Tiến Độ Đo Đạc:</label>
+                        <select name="measurement_status" id="adminMeasStatus" onchange="toggleFitGuaranteeCheckbox(this.value)"
+                                style="width: 100%; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 13px;">
+                            <option value="pending" {{ $consultation->measurement_status === 'pending' ? 'selected' : '' }}>1. Chờ kết nối hướng dẫn đo</option>
+                            <option value="guided_via_call" {{ $consultation->measurement_status === 'guided_via_call' ? 'selected' : '' }}>2. Đang gọi video hướng dẫn</option>
+                            <option value="confirmed" {{ $consultation->measurement_status === 'confirmed' ? 'selected' : '' }}>3. Đã chốt số đo video (Đạt chuẩn)</option>
+                            <option value="customer_self_measured" {{ $consultation->measurement_status === 'customer_self_measured' ? 'selected' : '' }}>4. Khách tự đo (Không qua video)</option>
+                        </select>
+                    </div>
+
+                    <!-- Fit Guarantee Switch (Only available when confirmed) -->
+                    <div id="fitGuaranteeWrapper" style="margin-bottom: 14px; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid var(--border);">
+                        <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; user-select: none;">
+                            <input type="checkbox" name="fit_guarantee_eligible" value="1" id="fitGuaranteeChk"
+                                   {{ $consultation->fit_guarantee_eligible ? 'checked' : '' }}
+                                   {{ $consultation->measurement_status !== 'confirmed' ? 'disabled' : '' }}
+                                   style="width: 16px; height: 16px; accent-color: #16a34a; margin-top: 2px; cursor: pointer;">
+                            <div>
+                                <span style="font-size: 12px; font-weight: 800; color: #166534;">
+                                    <i class="fa-solid fa-shield-check"></i> Kích hoạt Bảo Hiểm Vừa Vặn 100%
+                                </span>
+                                <p style="font-size: 11px; color: var(--on-surface-variant); margin: 2px 0 0 0;">
+                                    May lại/sửa miễn phí nếu sai lệch số đo. Chỉ áp dụng khi chuyên viên trực tiếp nghiệm thu qua video call.
+                                </p>
+                            </div>
+                        </label>
+                        @if($consultation->fit_guarantee_eligible && $consultation->fit_guarantee_confirmed_at)
+                            <div style="margin-top: 6px; font-size: 11px; color: #15803d; border-top: 1px dashed #bbf7d0; padding-top: 4px;">
+                                ✓ Thẩm định bởi: <strong>{{ $consultation->fitGuaranteeConfirmedBy?->name ?? 'Admin' }}</strong> lúc {{ $consultation->fit_guarantee_confirmed_at->format('H:i d/m/Y') }}
+                            </div>
+                        @endif
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-secondary btn-sm" style="width: 100%; justify-content: center;">
+                        <i class="fa-solid fa-check-double"></i> Lưu Trạng Thái Đo Đạc
+                    </button>
+                </form>
+            </div>
+
+            <script>
+                function toggleFitGuaranteeCheckbox(val) {
+                    const chk = document.getElementById('fitGuaranteeChk');
+                    if (!chk) return;
+                    if (val === 'confirmed') {
+                        chk.disabled = false;
+                        chk.checked = true;
+                    } else {
+                        chk.disabled = true;
+                        chk.checked = false;
+                    }
+                }
+            </script>
+        @endif
 
         <!-- Quick Summary Box -->
         <div class="card" style="margin-bottom: 0;">

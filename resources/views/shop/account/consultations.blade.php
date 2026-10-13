@@ -90,4 +90,6 @@
         </div>
     @endif
 </div>
+
+@include('shop.partials.survey-modal')
 @endsection
