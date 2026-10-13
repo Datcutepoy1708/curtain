@@ -65,6 +65,12 @@
             box-shadow: 0 6px 18px rgba(2, 132, 199, 0.2);
         }
 
+        .success-icon-badge.state-cancelled {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: #dc2626;
+            box-shadow: 0 6px 18px rgba(220, 38, 38, 0.2);
+        }
+
         .success-title {
             font-size: 26px;
             font-weight: 800;
@@ -824,21 +830,30 @@
         <div class="success-main-card">
 
             @php
+                $isCancelled = ($order->order_status === 'cancelled');
                 $isPaidOrCod = ($order->payment_status === 'paid' || $order->payment_method === 'cod');
             @endphp
 
             <!-- HERO HEADER -->
             <div class="success-hero-header">
-                <div id="main-icon-badge" class="success-icon-badge {{ $isPaidOrCod ? 'state-paid' : 'state-pending' }}">
-                    <i id="main-icon-el" class="{{ $isPaidOrCod ? 'fa-solid fa-check' : 'fa-solid fa-building-columns' }}"></i>
+                <div id="main-icon-badge" class="success-icon-badge {{ $isCancelled ? 'state-cancelled' : ($isPaidOrCod ? 'state-paid' : 'state-pending') }}">
+                    <i id="main-icon-el" class="{{ $isCancelled ? 'fa-solid fa-ban' : ($isPaidOrCod ? 'fa-solid fa-check' : 'fa-solid fa-building-columns') }}"></i>
                 </div>
 
                 <h1 id="page-main-title" class="success-title">
-                    {{ $isPaidOrCod ? 'Tạo Đơn Hàng May Rèm Thành Công!' : 'Quét Mã QR Chuyển Khoản Đơn Hàng' }}
+                    @if($isCancelled)
+                        Đơn Hàng Đã Hủy Giao Dịch
+                    @elseif($isPaidOrCod)
+                        Tạo Đơn Hàng May Rèm Thành Công!
+                    @else
+                        Quét Mã QR Chuyển Khoản Đơn Hàng
+                    @endif
                 </h1>
 
                 <p id="page-main-sub" class="success-sub">
-                    @if($order->payment_status === 'paid')
+                    @if($isCancelled)
+                        Giao dịch thanh toán cho đơn hàng <strong>{{ $order->order_code }}</strong> đã bị hủy. Toàn bộ phôi rèm đã được tự động hoàn trả lại tồn kho.
+                    @elseif($order->payment_status === 'paid')
                         Cảm ơn quý khách <strong>{{ $order->customer_name }}</strong>! Đơn hàng đã được thanh toán thành công và chuyển sang bộ phận may đo xưởng.
                     @elseif(in_array($order->payment_method, ['bank_transfer', 'qr_code']))
                         Vui lòng mở ứng dụng Ngân hàng hoặc Ví điện tử và quét mã VietQR bên dưới để thanh toán.<br>
@@ -1011,8 +1026,10 @@
                     </div>
                     <div>
                         <strong>Trạng thái thanh toán:</strong> 
-                        <span id="payment-status-badge" style="font-weight: 700; color: {{ $order->payment_status === 'paid' ? '#10b981' : '#f59e0b' }};">
-                            @if($order->payment_status === 'paid')
+                        <span id="payment-status-badge" style="font-weight: 700; color: {{ $isCancelled ? '#dc2626' : ($order->payment_status === 'paid' ? '#10b981' : '#f59e0b') }};">
+                            @if($isCancelled)
+                                <i class="fa-solid fa-ban"></i> Giao dịch đã hủy
+                            @elseif($order->payment_status === 'paid')
                                 <i class="fa-solid fa-circle-check"></i> Đã thanh toán thành công
                             @else
                                 <i class="fa-solid fa-clock"></i> Chờ chuyển khoản
@@ -1151,10 +1168,14 @@
                     <i class="fa-solid fa-ban"></i>
                 </div>
                 <h4 style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 0 0 8px;">Giao dịch đã được hủy an toàn</h4>
-                <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin: 0 0 20px;">
+                <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin: 0 0 16px;">
                     Đơn hàng <strong>#{{ $order->order_code }}</strong> đã dừng thanh toán chuyển khoản.<br>
                     Toàn bộ số lượng vải & phụ kiện rèm đã được tự động hoàn trả lại tồn kho của xưởng may.
                 </p>
+
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; color: #b86b53; font-size: 13px; font-weight: 600; margin-bottom: 16px;">
+                    <i class="fa-solid fa-arrows-rotate fa-spin"></i> Hệ thống đang tự động tải lại trang...
+                </div>
 
                 <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 12px 18px; display: inline-flex; gap: 20px; font-size: 13px; color: #475569;">
                     <span>Trạng thái: <strong style="color: #dc2626;">Đã hủy</strong></span>
@@ -1346,14 +1367,20 @@
                     closeCancelConfirmModal();
                     openCancelSuccessModal();
 
-                    // 2. Hide Bank Box & Show Cancelled Banner
+                    // 2. Show Toast Notification
+                    showToast('Đã hủy giao dịch thành công! Đang tự động tải lại trang...');
+
+                    // 3. Save notification flag into sessionStorage for display after page reloads
+                    sessionStorage.setItem('order_cancelled_notif', 'Đã hủy giao dịch thành công! Toàn bộ phôi rèm đã được hoàn lại kho.');
+
+                    // 4. Hide Bank Box & Show Cancelled Banner
                     const bankBox = document.getElementById('bank-box');
                     if (bankBox) bankBox.style.display = 'none';
 
                     const cancelledBanner = document.getElementById('cancelled-banner');
                     if (cancelledBanner) cancelledBanner.style.display = 'flex';
 
-                    // 3. Update Status Badges
+                    // 5. Update Status Badges
                     const badgeEl = document.getElementById('payment-status-badge');
                     if (badgeEl) {
                         badgeEl.style.color = '#dc2626';
@@ -1363,8 +1390,7 @@
                     const mainBadge = document.getElementById('main-icon-badge');
                     const mainIcon = document.getElementById('main-icon-el');
                     if (mainBadge && mainIcon) {
-                        mainBadge.style.background = '#fee2e2';
-                        mainBadge.style.color = '#dc2626';
+                        mainBadge.className = 'success-icon-badge state-cancelled';
                         mainIcon.className = 'fa-solid fa-ban';
                     }
 
@@ -1375,6 +1401,11 @@
                     if (subEl) {
                         subEl.innerHTML = 'Giao dịch cho đơn hàng <strong>' + orderCode + '</strong> đã bị hủy. Phôi rèm đã được hoàn lại tồn kho.';
                     }
+
+                    // 6. Automatically reload after 1.5 seconds
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
                 } else {
                     alert(json.message || 'Không thể hủy giao dịch.');
                 }
@@ -1433,8 +1464,17 @@
             }
         }
 
-        // Initialize auto-polling
-        document.addEventListener('DOMContentLoaded', startPolling);
+        // Initialize auto-polling and check if redirected/reloaded after cancel
+        document.addEventListener('DOMContentLoaded', function() {
+            startPolling();
+
+            // Display toast notification if page was reloaded after cancellation
+            const cancelMsg = sessionStorage.getItem('order_cancelled_notif');
+            if (cancelMsg) {
+                sessionStorage.removeItem('order_cancelled_notif');
+                showToast(cancelMsg);
+            }
+        });
     </script>
 </body>
 </html>
