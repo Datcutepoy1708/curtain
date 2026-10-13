@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/sepay/webhook',
             'sepay/webhook',
             'api/payment/sandbox-simulate/*',
+            'api/order/cancel/*',
         ]);
 
         $middleware->alias([

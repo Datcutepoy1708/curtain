@@ -62,6 +62,7 @@ Route::post('/gio-hang/dat-hang', [CartController::class, 'checkout'])->name('ca
 Route::get('/don-hang/xac-nhan/{orderCode}', [CartController::class, 'orderSuccess'])->name('order.success');
 Route::get('/tra-cuu-don-hang', [\App\Http\Controllers\PaymentController::class, 'tracking'])->name('order.tracking');
 Route::get('/api/payment/status/{orderCode}', [\App\Http\Controllers\PaymentController::class, 'checkStatus'])->name('payment.status');
+Route::post('/api/order/cancel/{orderCode}', [CartController::class, 'cancelOrder'])->name('order.cancel');
 Route::post('/api/payment/sandbox-simulate/{orderCode}', [\App\Http\Controllers\PaymentController::class, 'sandboxSimulate'])->name('payment.sandbox-simulate');
 Route::post('/api/sepay/webhook', [\App\Http\Controllers\PaymentController::class, 'sepayWebhook'])->name('payment.sepay.webhook');
 Route::post('/sepay/webhook', [\App\Http\Controllers\PaymentController::class, 'sepayWebhook']);

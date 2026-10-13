@@ -362,6 +362,85 @@
             color: var(--accent-cta, #b8935c);
         }
 
+        .btn-cancel-order {
+            background: #ffffff;
+            border: 1px solid #f87171;
+            color: #dc2626;
+            font-size: 12.5px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-cancel-order:hover {
+            background: #fef2f2;
+            border-color: #b91c1c;
+            color: #b91c1c;
+        }
+
+        .cancelled-banner-box {
+            background: #fef2f2;
+            border: 1.5px solid #fca5a5;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .cancelled-banner-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #fee2e2;
+            color: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .cancelled-banner-content h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #991b1b;
+            margin: 0 0 6px;
+        }
+
+        .cancelled-banner-content p {
+            font-size: 13.5px;
+            color: #7f1d1d;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .btn-cancelled-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            padding: 7px 16px;
+            background: #dc2626;
+            color: #ffffff;
+            font-size: 12.5px;
+            font-weight: 600;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .btn-cancelled-home:hover {
+            background: #b91c1c;
+            color: #ffffff;
+        }
+
         /* SANDBOX SIMULATOR BOX (Complexus feature) */
         .sandbox-payment-bar {
             background: #fffbeb;
@@ -529,6 +608,20 @@
                 </div>
             </div>
 
+            <!-- 0. CANCELLED BANNER -->
+            <div id="cancelled-banner" class="cancelled-banner-box" style="{{ $order->order_status === 'cancelled' ? 'display: flex;' : 'display: none;' }}">
+                <div class="cancelled-banner-icon">
+                    <i class="fa-solid fa-ban"></i>
+                </div>
+                <div class="cancelled-banner-content">
+                    <h3>Giao Dịch / Đơn Hàng Đã Được Hủy</h3>
+                    <p>Đơn hàng <strong>{{ $order->order_code }}</strong> đã hủy giao dịch thành công. Lượng phôi rèm tương ứng đã được tự động hoàn trả lại tồn kho.</p>
+                    <a href="/" class="btn-cancelled-home">
+                        <i class="fa-solid fa-arrow-left"></i> Quay lại cửa hàng mua sắm
+                    </a>
+                </div>
+            </div>
+
             <!-- 1. PAID SUCCESS BANNER (Green Checkmark) -->
             <div id="paid-banner" class="paid-banner-box" style="{{ $order->payment_status === 'paid' ? 'display: flex;' : 'display: none;' }}">
                 <div class="paid-banner-icon">
@@ -546,7 +639,7 @@
 
             <!-- 2. BANK TRANSFER INSTRUCTIONS & VIETQR (Complexus System) -->
             @if(in_array($order->payment_method, ['bank_transfer', 'qr_code']))
-            <div id="bank-box" class="bank-box" style="{{ $order->payment_status === 'paid' ? 'display: none;' : 'display: block;' }}">
+            <div id="bank-box" class="bank-box" style="{{ ($order->payment_status === 'paid' || $order->order_status === 'cancelled') ? 'display: none;' : 'display: block;' }}">
                 <div class="bank-box-header">
                     <i class="fa-solid fa-qrcode" style="font-size: 20px;"></i>
                     <h3>Cổng Thanh Toán Chuyển Khoản Tự Động (VietQR)</h3>
@@ -561,7 +654,8 @@
                         <img id="vietqr-image" 
                              src="{{ $vietQrData['qr_code_url'] }}" 
                              alt="Mã VietQR Thanh Toán CurtainLux" 
-                             class="vietqr-image">
+                             class="vietqr-image"
+                             onerror="if (!this.dataset.fallback) { this.dataset.fallback = '1'; this.src = '{{ $vietQrData['fallback_qr_code_url'] ?? '' }}'; }">
                         <span class="qr-hint-text">
                             <i class="fa-solid fa-camera"></i> Quét mã bằng App ngân hàng bất kỳ (MB, Vietcombank, Techcombank, VPBank...)
                         </span>
@@ -617,9 +711,14 @@
                         <div class="pulse-dot"></div>
                         <span id="polling-status-msg">Hệ thống đang tự động lắng nghe giao dịch chuyển khoản VietQR...</span>
                     </div>
-                    <button type="button" id="btn-manual-check" class="btn-check-manual" onclick="checkPaymentStatusManual()">
-                        <i class="fa-solid fa-arrows-rotate"></i> Kiểm tra ngay
-                    </button>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <button type="button" id="btn-manual-check" class="btn-check-manual" onclick="checkPaymentStatusManual()">
+                            <i class="fa-solid fa-arrows-rotate"></i> Kiểm tra ngay
+                        </button>
+                        <button type="button" id="btn-cancel-order" class="btn-cancel-order" onclick="cancelTransaction()">
+                            <i class="fa-solid fa-ban"></i> Hủy giao dịch
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Sandbox Simulator Bar (Complexus Feature) -->
@@ -833,6 +932,77 @@
                     btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Giả Lập Chuyển Khoản Thành Công';
                 }
                 alert('Lỗi kết nối máy chủ giả lập.');
+            });
+        };
+
+        // Cancel Transaction / Order
+        window.cancelTransaction = function() {
+            if (!confirm('Bạn có chắc chắn muốn hủy giao dịch và đơn hàng #' + orderCode + ' không? Toàn bộ phôi rèm sẽ được hoàn lại kho.')) {
+                return;
+            }
+
+            const btn = document.getElementById('btn-cancel-order');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang hủy...';
+            }
+
+            fetch('/api/order/cancel/' + encodeURIComponent(orderCode), {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ reason: 'Khách hàng bấm hủy tại màn hình VietQR' })
+            })
+            .then(res => res.json())
+            .then(json => {
+                if (json.success) {
+                    if (pollTimer) clearInterval(pollTimer);
+                    showToast('Đã hủy giao dịch thành công!');
+
+                    const bankBox = document.getElementById('bank-box');
+                    if (bankBox) bankBox.style.display = 'none';
+
+                    const cancelledBanner = document.getElementById('cancelled-banner');
+                    if (cancelledBanner) cancelledBanner.style.display = 'flex';
+
+                    const badgeEl = document.getElementById('payment-status-badge');
+                    if (badgeEl) {
+                        badgeEl.style.color = '#dc2626';
+                        badgeEl.innerHTML = '<i class="fa-solid fa-ban"></i> Giao dịch đã hủy';
+                    }
+
+                    const mainBadge = document.getElementById('main-icon-badge');
+                    const mainIcon = document.getElementById('main-icon-el');
+                    if (mainBadge && mainIcon) {
+                        mainBadge.style.background = '#fee2e2';
+                        mainBadge.style.color = '#dc2626';
+                        mainIcon.className = 'fa-solid fa-ban';
+                    }
+
+                    const titleEl = document.getElementById('page-main-title');
+                    if (titleEl) titleEl.textContent = 'Đơn Hàng Đã Hủy Giao Dịch';
+
+                    const subEl = document.getElementById('page-main-sub');
+                    if (subEl) {
+                        subEl.innerHTML = 'Giao dịch cho đơn hàng <strong>' + orderCode + '</strong> đã bị hủy. Phôi rèm đã được hoàn lại tồn kho.';
+                    }
+                } else {
+                    alert(json.message || 'Không thể hủy giao dịch.');
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fa-solid fa-ban"></i> Hủy giao dịch';
+                    }
+                }
+            })
+            .catch(err => {
+                alert('Có lỗi kết nối máy chủ khi gửi yêu cầu hủy.');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-ban"></i> Hủy giao dịch';
+                }
             });
         };
 

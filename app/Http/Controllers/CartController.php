@@ -403,7 +403,8 @@ class CartController extends Controller
         $amount = (int) $order->total_amount;
         $memo = $order->order_code;
 
-        $qrCodeUrl = "https://img.vietqr.io/image/{$bankId}-{$accountNo}-compact2.png?" . http_build_query([
+        $sepayQrUrl = "https://qr.sepay.vn/img?bank={$bankId}&acc={$accountNo}&template=compact&amount={$amount}&des=" . urlencode($memo);
+        $vietQrUrl = "https://img.vietqr.io/image/{$bankId}-{$accountNo}-compact2.png?" . http_build_query([
             'amount' => $amount,
             'addInfo' => $memo,
             'accountName' => $accountName,
@@ -416,9 +417,56 @@ class CartController extends Controller
             'account_name' => $accountName,
             'amount' => $amount,
             'memo' => $memo,
-            'qr_code_url' => $qrCodeUrl,
+            'qr_code_url' => $sepayQrUrl,
+            'fallback_qr_code_url' => $vietQrUrl,
         ];
 
         return view('shop.order-success', compact('order', 'vietQrData'));
+    }
+
+    /**
+     * Hủy giao dịch / Đơn hàng chưa thanh toán từ phía khách hàng
+     */
+    public function cancelOrder(Request $request, $orderCode): JsonResponse
+    {
+        $order = Order::where('order_code', strtoupper(trim($orderCode)))
+            ->with('items')
+            ->first();
+
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy đơn hàng cần hủy.',
+            ], 404);
+        }
+
+        if ($order->payment_status === 'paid') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đơn hàng này đã được thanh toán thành công, không thể hủy trực tuyến. Vui lòng liên hệ hotline.',
+            ], 400);
+        }
+
+        if ($order->order_status === 'cancelled') {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đơn hàng đã được hủy trước đó.',
+            ]);
+        }
+
+        if (method_exists($order, 'restoreStock')) {
+            $order->restoreStock();
+        }
+
+        $reason = $request->input('reason', 'Khách hàng yêu cầu hủy giao dịch tại màn hình thanh toán VietQR');
+        $order->order_status = 'cancelled';
+        $order->payment_status = 'failed';
+        $order->notes = trim(($order->notes ? $order->notes . "\n" : '') . "[Khách hàng]: Hủy giao dịch lúc " . now()->format('d/m/Y H:i:s') . ". Lý do: {$reason}");
+        $order->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Đã hủy đơn hàng #{$order->order_code} thành công.",
+        ]);
     }
 }
